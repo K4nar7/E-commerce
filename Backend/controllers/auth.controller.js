@@ -1,7 +1,7 @@
 import User from '../models/user.model.js';
 import jwt from 'jsonwebtoken';
-import {redis} from '../Lib/redis.js';
-
+// Fixed import path case sensitivity
+import redis from "../lib/redis.js";
 
 const generateToken = (userId) => {
     const accessToken = jwt.sign({userId},process.env.ACCESS_TOKEN_SECRET,{expiresIn: '15m'});
