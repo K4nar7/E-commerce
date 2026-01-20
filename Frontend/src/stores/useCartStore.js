@@ -40,7 +40,10 @@ export const useCartStore = create((set, get) => ({
 			get().calculateTotals();
 		} catch (error) {
 			set({ cart: [] });
-			toast.error(error.response.data.message || "An error occurred");
+			// Only show error if it's not a 401 (unauthorized)
+			if (error.response?.status !== 401) {
+				toast.error(error.response?.data?.message || "An error occurred");
+			}
 		}
 	},
 	clearCart: async () => {

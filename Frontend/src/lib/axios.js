@@ -7,4 +7,19 @@ const axiosInstance = axios.create({
     withCredentials: true,
 });
 
+// Prevent showing unauthorized error on initial auth check
+let isInitialAuthCheck = true;
+
+axiosInstance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401 && isInitialAuthCheck) {
+            isInitialAuthCheck = false;
+            return Promise.reject(error);
+        }
+        isInitialAuthCheck = false;
+        return Promise.reject(error);
+    }
+);
+
 export default axiosInstance;

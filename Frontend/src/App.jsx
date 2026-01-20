@@ -14,14 +14,14 @@ import CategoryPage from "./pages/CategoryPage";
 import CartPage from "./pages/CartPage"
 
 function App() {
- const { user ,checkAuth,chekingAuth} = useUserStore();
+ const { user ,checkAuth,checkingAuth} = useUserStore();
  const {getCartItems}=useCartStore();
   useEffect(() => {checkAuth()}, [checkAuth]);
   
   useEffect(() => {
     getCartItems();
   }, [getCartItems]);
-  if(chekingAuth) return <LoadingSpinner/>
+  if(checkingAuth) return <LoadingSpinner/>
   return (
    <div className='min-h-screen bg-gray-900 text-white relative overflow-hidden'>
 			{/* Background gradient */}
@@ -42,7 +42,7 @@ function App() {
         <Route path="/cart" element={user ? <CartPage /> : <Navigate to="/login" />} />
       </Routes>
       </div>
-      {/* <Toaster/> */}
+      <Toaster/>
     </div>
   )
 }
