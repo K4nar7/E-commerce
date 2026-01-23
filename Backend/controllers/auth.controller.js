@@ -9,7 +9,12 @@ const generateToken = (userId) => {
 }
 
 const storeRefreshToken = async (userId, refreshToken) => {
-    await redis.set(`refresh_token:${userId}`, refreshToken, 'Ex', 7 * 24 * 60 * 60);
+   try {
+        await redis.set(`refresh_token:${userId}`, refreshToken, 'Ex', 7 * 24 * 60 * 60);
+    } catch (error) {
+        console.error("REDIS ERROR:", error);
+        
+    }
 }
 
 const setCookies = (res, accessToken, refreshToken) => {
@@ -83,15 +88,28 @@ export const logout = async (req, res) => {
     try {
         const refreshToken = req.cookies.refresh_token;
         if (refreshToken) {
-            const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-            await redis.del(`refresh_token:${decoded.userId}`);
+            try {
+                const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+                await redis.del(`refresh_token:${decoded.userId}`);
+            } catch (innerError) {
+                console.log("Redis or JWT error during logout, continuing to clear cookies...");
+            }
         }
-        res.clearCookie('access_token');
-        res.clearCookie('refresh_token');
-        res.status(200).json({ message: "Logout successful" });
     } catch (error) {
-        console.error("Error during logout:", error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error("Logout logic error:", error);
+    } finally {
+        // ALWAYS clear cookies, even if the code above failed
+        res.clearCookie('access_token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        });
+        res.clearCookie('refresh_token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        });
+        res.status(200).json({ message: "Logout successful" });
     }
 }
 
