@@ -20,7 +20,7 @@ const LoginPage = () => {
       initial={{opacity:0,y:20}}
       animate={{opacity:1,y:0}}
       transition={{duration:0.5,delay:0.2}}>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-purple-400">Create Your Account</h2>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-purple-400">Login</h2>
       <motion.div className="bg-gray-800 py-8 px-4 sm:rounded-lg sm:px-10"
         initial={{opacity:0, y:20}}
         animate={{opacity:1, y:0}}
